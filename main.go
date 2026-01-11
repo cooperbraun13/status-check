@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -75,7 +76,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	// if there's an error, print it out and don't do anything else
+	if m.err != nil {
+		return fmt.Sprintf("\nWe had some trouble: %v\n\n", m.err)
+	}
 
+	// tell the user we're doing something
+	s := fmt.Sprintf("Checking %s ... ", url)
+
+	// when the server responds with a status, add it to the current line
+	if m.status > 0 {
+		s += fmt.Sprintf("%d %s!", m.status, http.StatusText(m.status))
+	}
+
+	// send off whatever we came up with above for rendering
+	return "\n" + s + "\n\n"
 }
 
 func main() {
